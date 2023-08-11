@@ -6,6 +6,7 @@ pygame.init()
 
 WIDTH = 800
 HEIGHT = 600
+TOPBAR_HEIGHT = 50
 
 WINDOW = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Aim Trainer")
@@ -15,6 +16,9 @@ TARGET_EVENT = pygame.USEREVENT
 TARGET_PADDING = 30
 
 BG_COLOR = (0, 30, 30)
+LIVES = 3
+
+FONT = pygame.font.SysFont("comicsans", 24)
 
 class Target:
     MAX_SIZE = 30
@@ -60,9 +64,20 @@ def drawMain(win, targets):
     for target in targets:
         target.drawTarget(win)
     
-    pygame.display.update()
+   
 
+def drawTopbar(win, elapsedTime, targetClicked, misses):
+    pygame.draw.rect(win, "grey", (0,0, WIDTH, TOPBAR_HEIGHT ))
+    timeLabel = FONT.render(formatTime(elapsedTime), 1, "black")
 
+    win.blit(timeLabel, (5, 5))
+
+def formatTime(inputTime):
+    miliseconds = math.floor(int(inputTime * 1000 % 1000 / 10))
+    seconds = int(round(inputTime % 60, 1))
+    minutes = int(inputTime//60)
+
+    return f"{minutes:02d}:{seconds:02d}.{miliseconds}"
 
 def main():
     running = True
@@ -76,6 +91,7 @@ def main():
     misses = 0
     startTime = time.time()
 
+
     # every increment redraw targets on the screen
     pygame.time.set_timer(TARGET_EVENT,TARGET_INCREMENT)
 
@@ -84,6 +100,9 @@ def main():
         clock.tick(60)
         mouseClicked = False
         mousePos = pygame.mouse.get_pos()
+        elapsedTime = time.time() - startTime
+        # print(elapsedTime)
+
         # event listener
         for event in pygame.event.get():
             # quit game event
@@ -113,9 +132,12 @@ def main():
                 targets.remove(target)
                 targetClicked += 1
 
+        if misses >= LIVES:
+            pass
         # redraw everything
         drawMain(WINDOW, targets)
-
+        drawTopbar(WINDOW, elapsedTime, targetClicked, misses)
+        pygame.display.update()
     pygame.quit()
 
 
