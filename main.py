@@ -70,7 +70,15 @@ def drawTopbar(win, elapsedTime, targetClicked, misses):
     pygame.draw.rect(win, "grey", (0,0, WIDTH, TOPBAR_HEIGHT ))
     timeLabel = FONT.render(formatTime(elapsedTime), 1, "black")
 
+    speed = round(targetClicked / elapsedTime, 1)
+    speedLabel = FONT.render(f"Speed: {speed} hit/s", 1, "black")
+
+    hitLabel = FONT.render(f"Hits: {targetClicked}", 1, "black")
+
     win.blit(timeLabel, (5, 5))
+    win.blit(speedLabel, (200,5))
+    win.blit(hitLabel, (470,5))
+
 
 def formatTime(inputTime):
     miliseconds = math.floor(int(inputTime * 1000 % 1000 / 10))
@@ -112,7 +120,7 @@ def main():
             # target generation event
             if event.type == TARGET_EVENT:
                 x = random.randint(TARGET_PADDING, WIDTH - TARGET_PADDING)
-                y = random.randint(TARGET_PADDING, HEIGHT - TARGET_PADDING)
+                y = random.randint(TARGET_PADDING + TOPBAR_HEIGHT, HEIGHT - TARGET_PADDING)
                 newTarget = Target(x,y)
                 targets.append(newTarget)
             # click event
